@@ -10,7 +10,16 @@ class App extends Component {
     this.state = {
       tasks: [],
       isDisplayForm: false,
-      taskEditing: null
+      taskEditing: null,
+      filter: {
+        name: "",
+        status: -1
+      },
+      keyword: "",
+      sort: {
+        by: "name",
+        value: 1
+      }
     };
   }
 
@@ -67,7 +76,7 @@ class App extends Component {
   }
 
   handleDisplayForm = () => {
-    if (this.state.isDisplayForm !== null) {
+    if (this.state.taskEditing !== null) {
       this.setState({
         isDisplayForm: true,
         taskEditing: null
@@ -82,7 +91,7 @@ class App extends Component {
 
   onCloseForm = () => {
     this.setState({
-      isDisplayForm: true,
+      isDisplayForm: false,
       taskEditing: null
     });
   };
@@ -153,8 +162,74 @@ class App extends Component {
     });
   };
 
+  handleFilter = filter => {
+    filter.filterStatus = parseInt(filter.filterStatus, 10);
+    filter.filterName = filter.filterName.toLowerCase();
+    this.setState({
+      filter: {
+        name: filter.filterName,
+        status: filter.filterStatus
+      }
+    });
+  };
+
+  handleSearch = key => {
+    this.setState({ keyword: key });
+  };
+
+  handleSort = (sortBy, sortVal) => {
+    this.setState({
+      sort: {
+        by: sortBy,
+        value: sortVal
+      }
+    });
+  };
+
   render() {
-    const { tasks, isDisplayForm, taskEditing } = this.state;
+    let {
+      tasks,
+      isDisplayForm,
+      taskEditing,
+      filter,
+      keyword,
+      sort
+    } = this.state;
+
+    if (filter) {
+      if (filter.status === -1) {
+        tasks = tasks.filter(
+          task => task.name.toLowerCase().indexOf(filter.name) !== -1
+        );
+      } else {
+        tasks = tasks.filter(task => {
+          return (
+            task.name.toLowerCase().indexOf(filter.name) !== -1 &&
+            task.status === (filter.status === 1 ? true : false)
+          );
+        });
+      }
+    }
+
+    if (keyword) {
+      tasks = tasks.filter(
+        task => task.name.toLowerCase().indexOf(keyword) !== -1
+      );
+    }
+
+    if (sort.by === "name") {
+      tasks.sort((a, b) => {
+        if (a.name > b.name) return sort.value;
+        else if (a.name < b.name) return -sort.value;
+        else return 0;
+      });
+    } else {
+      tasks.sort((a, b) => {
+        if (a.status > b.status) return -sort.value;
+        else if (a.status < b.status) return sort.value;
+        else return 0;
+      });
+    }
 
     return (
       <div className="container">
@@ -192,7 +267,11 @@ class App extends Component {
             >
               <span className="fa fa-plus mr-5" />Thêm Công Việc
             </button>
-            <TaskControl />
+            <TaskControl
+              onSearch={this.handleSearch}
+              onSort={this.handleSort}
+              sort={sort}
+            />
             <div className="row mt-15">
               <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <TaskList
@@ -200,6 +279,7 @@ class App extends Component {
                   onUpdateStatus={this.handleUpdateStatus}
                   onDelete={this.handleDelete}
                   onUpdate={this.handleUpdate}
+                  onFilter={this.handleFilter}
                 />
               </div>
             </div>

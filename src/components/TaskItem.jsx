@@ -19,7 +19,7 @@ class TaskItem extends Component {
         <td>{name}</td>
         <td className="text-center">
           <span
-            className={"label label-" + (status ? "success" : "danger")}
+            className={"label label-" + (status ? "success" : "default")}
             onClick={() => {
               onUpdateStatus(id);
             }}
