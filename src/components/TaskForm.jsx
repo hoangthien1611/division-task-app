@@ -4,9 +4,37 @@ class TaskForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: "",
       name: "",
       status: false
     };
+  }
+
+  componentWillMount() {
+    const { taskEditing } = this.props;
+    if (taskEditing) {
+      this.setState({
+        id: taskEditing.id,
+        name: taskEditing.name,
+        status: taskEditing.status
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps && nextProps.taskEditing) {
+      this.setState({
+        id: nextProps.taskEditing.id,
+        name: nextProps.taskEditing.name,
+        status: nextProps.taskEditing.status
+      });
+    } else if (!nextProps.taskEditing) {
+      this.setState({
+        id: "",
+        name: "",
+        status: false
+      });
+    }
   }
 
   onChange = event => {
@@ -39,7 +67,7 @@ class TaskForm extends Component {
       <div className="panel panel-warning">
         <div className="panel-heading">
           <h3 className="panel-title">
-            Thêm Công Việc
+            {this.state.id === "" ? "Thêm Công Việc" : "Cập nhật công việc"}
             <span className="fa fa-times-circle text-right" onClick={onClose} />
           </h3>
         </div>
@@ -68,7 +96,7 @@ class TaskForm extends Component {
             <br />
             <div className="text-center">
               <button type="submit" className="btn btn-warning">
-                Thêm
+                Lưu lại
               </button>&nbsp;
               <button
                 type="button"

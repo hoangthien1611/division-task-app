@@ -9,7 +9,8 @@ class App extends Component {
     super(props);
     this.state = {
       tasks: [],
-      isDisplayForm: false
+      isDisplayForm: false,
+      taskEditing: null
     };
   }
 
@@ -66,32 +67,94 @@ class App extends Component {
   }
 
   handleDisplayForm = () => {
-    let isDisplayForm = !this.state.isDisplayForm;
-    this.setState({ isDisplayForm });
+    if (this.state.isDisplayForm !== null) {
+      this.setState({
+        isDisplayForm: true,
+        taskEditing: null
+      });
+    } else {
+      this.setState({
+        isDisplayForm: !this.state.isDisplayForm,
+        taskEditing: null
+      });
+    }
+  };
+
+  onCloseForm = () => {
+    this.setState({
+      isDisplayForm: true,
+      taskEditing: null
+    });
   };
 
   handleSubmitForm = data => {
     let { tasks } = this.state;
-    let task = {
-      id: this.generateId(),
-      name: data.name,
-      status: data.status === "true" ? true : false
-    };
+    data.status = data.status === "true" ? true : false;
 
-    tasks.push(task);
+    if (data.id === "") {
+      data.id = this.generateId();
+      tasks.push(data);
+    } else {
+      let index = this.findIndexById(data.id);
+      tasks[index] = data;
+    }
+
     this.setState({
-      tasks: tasks
+      tasks: tasks,
+      taskEditing: null
     });
 
     localStorage.setItem("tasks", JSON.stringify(tasks));
   };
 
   handleUpdateStatus = id => {
-    console.log(id);
+    const { tasks } = this.state;
+    let index = this.findIndexById(id);
+    if (index > -1) {
+      tasks[index].status = !tasks[index].status;
+      this.setState({
+        tasks
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  };
+
+  findIndexById = id => {
+    const { tasks } = this.state;
+    return tasks.findIndex(task => task.id === id);
+  };
+
+  handleDelete = id => {
+    const { tasks } = this.state;
+    let index = this.findIndexById(id);
+    if (index > -1) {
+      tasks.splice(index, 1);
+      this.setState({
+        tasks
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  };
+
+  handleUpdate = id => {
+    const { tasks } = this.state;
+    let index = this.findIndexById(id);
+    if (index > -1) {
+      this.setState({
+        taskEditing: tasks[index]
+      });
+    }
+    this.onShowForm();
+  };
+
+  onShowForm = () => {
+    this.setState({
+      isDisplayForm: true
+    });
   };
 
   render() {
-    const { tasks, isDisplayForm } = this.state;
+    const { tasks, isDisplayForm, taskEditing } = this.state;
 
     return (
       <div className="container">
@@ -108,7 +171,8 @@ class App extends Component {
             {isDisplayForm ? (
               <TaskForm
                 onSubmit={this.handleSubmitForm}
-                onClose={this.handleDisplayForm}
+                onClose={this.onCloseForm}
+                taskEditing={taskEditing}
               />
             ) : (
               ""
@@ -134,6 +198,8 @@ class App extends Component {
                 <TaskList
                   tasks={tasks}
                   onUpdateStatus={this.handleUpdateStatus}
+                  onDelete={this.handleDelete}
+                  onUpdate={this.handleUpdate}
                 />
               </div>
             </div>
