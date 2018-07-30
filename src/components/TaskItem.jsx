@@ -1,37 +1,42 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import * as actions from "../actions";
 
 class TaskItem extends Component {
   state = {};
   render() {
     const {
       index,
-      name,
-      status,
-      id,
+      task,
       onUpdateStatus,
-      onDelete,
-      onUpdate
+      onDeleteTask,
+      onEditTask,
+      onCloseForm,
+      onOpenForm
     } = this.props;
 
     return (
       <tr>
         <td>{index + 1}</td>
-        <td>{name}</td>
+        <td>{task.name}</td>
         <td className="text-center">
           <span
-            className={"label label-" + (status ? "success" : "default")}
+            className={"label label-" + (task.status ? "success" : "default")}
             onClick={() => {
-              onUpdateStatus(id);
+              onUpdateStatus(task.id);
             }}
           >
-            {status ? "Kích hoạt" : "Ẩn"}
+            {task.status ? "Kích hoạt" : "Ẩn"}
           </span>
         </td>
         <td className="text-center">
           <button
             type="button"
             className="btn btn-warning"
-            onClick={() => onUpdate(id)}
+            onClick={() => {
+              onEditTask(task);
+              onOpenForm();
+            }}
           >
             <span className="fa fa-pencil mr-5" />Sửa
           </button>
@@ -39,7 +44,10 @@ class TaskItem extends Component {
           <button
             type="button"
             className="btn btn-danger"
-            onClick={() => onDelete(id)}
+            onClick={() => {
+              onDeleteTask(task.id);
+              onCloseForm();
+            }}
           >
             <span className="fa fa-trash mr-5" />Xóa
           </button>
@@ -49,4 +57,31 @@ class TaskItem extends Component {
   }
 }
 
-export default TaskItem;
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onUpdateStatus: id => {
+      dispatch(actions.updateStatus(id));
+    },
+    onDeleteTask: id => {
+      dispatch(actions.deleteTask(id));
+    },
+    onCloseForm: () => {
+      dispatch(actions.closeForm());
+    },
+    onOpenForm: () => {
+      dispatch(actions.openForm());
+    },
+    onEditTask: task => {
+      dispatch(actions.editTask(task));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskItem);

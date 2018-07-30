@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import * as actions from "../actions";
 
 class TaskForm extends Component {
   constructor(props) {
@@ -18,6 +20,8 @@ class TaskForm extends Component {
         name: taskEditing.name,
         status: taskEditing.status
       });
+    } else {
+      this.onClear();
     }
   }
 
@@ -29,13 +33,13 @@ class TaskForm extends Component {
         status: nextProps.taskEditing.status
       });
     } else if (!nextProps.taskEditing) {
-      this.setState({
-        id: "",
-        name: "",
-        status: false
-      });
+      this.onClear();
     }
   }
+
+  onCloseForm = () => {
+    this.props.onCloseForm();
+  };
 
   onChange = event => {
     const target = event.target;
@@ -48,12 +52,12 @@ class TaskForm extends Component {
 
   onSubmit = event => {
     event.preventDefault();
-    this.props.onSubmit(this.state);
-    this.onCancel();
-    this.props.onClose();
+    this.props.onSubmitTask(this.state);
+    this.onClear();
+    this.props.onCloseForm();
   };
 
-  onCancel = () => {
+  onClear = () => {
     this.setState({
       name: "",
       status: false
@@ -61,14 +65,18 @@ class TaskForm extends Component {
   };
 
   render() {
-    const { onClose } = this.props;
+    const { isDisplayForm, onCloseForm } = this.props;
 
+    if (!isDisplayForm) return null;
     return (
       <div className="panel panel-warning">
         <div className="panel-heading">
           <h3 className="panel-title">
             {this.state.id === "" ? "Thêm Công Việc" : "Cập nhật công việc"}
-            <span className="fa fa-times-circle text-right" onClick={onClose} />
+            <span
+              className="fa fa-times-circle text-right"
+              onClick={this.onCloseForm}
+            />
           </h3>
         </div>
         <div className="panel-body">
@@ -101,7 +109,7 @@ class TaskForm extends Component {
               <button
                 type="button"
                 className="btn btn-danger"
-                onClick={this.onCancel}
+                onClick={this.onClear}
               >
                 Hủy Bỏ
               </button>
@@ -113,4 +121,25 @@ class TaskForm extends Component {
   }
 }
 
-export default TaskForm;
+const mapStateToProps = state => {
+  return {
+    isDisplayForm: state.isDisplayForm,
+    taskEditing: state.taskEditing
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onSubmitTask: task => {
+      dispatch(actions.submitTask(task));
+    },
+    onCloseForm: () => {
+      dispatch(actions.closeForm());
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskForm);

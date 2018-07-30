@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import TaskItem from "./TaskItem";
+import { connect } from "react-redux";
 
 class TaskList extends Component {
   constructor(props) {
@@ -25,21 +26,10 @@ class TaskList extends Component {
   };
 
   render() {
-    const { tasks, onUpdateStatus, onDelete, onUpdate } = this.props;
+    const { tasks, onUpdate } = this.props;
     let { filterName, filterStatus } = this.state;
     const elmTask = tasks.map((task, index) => {
-      return (
-        <TaskItem
-          key={task.id}
-          index={index}
-          id={task.id}
-          name={task.name}
-          status={task.status}
-          onUpdateStatus={onUpdateStatus}
-          onDelete={onDelete}
-          onUpdate={onUpdate}
-        />
-      );
+      return <TaskItem key={task.id} index={index} task={task} />;
     });
 
     return (
@@ -93,4 +83,13 @@ class TaskList extends Component {
   }
 }
 
-export default TaskList;
+const mapStateToProps = state => {
+  return {
+    tasks: state.tasks
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(TaskList);
