@@ -9,12 +9,7 @@ import * as actions from "./actions";
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      sort: {
-        by: "name",
-        value: 1
-      }
-    };
+    this.state = {};
   }
 
   handleDisplayForm = () => {
@@ -31,32 +26,8 @@ class App extends Component {
     });
   };
 
-  handleSort = (sortBy, sortVal) => {
-    this.setState({
-      sort: {
-        by: sortBy,
-        value: sortVal
-      }
-    });
-  };
-
   render() {
-    const { sort } = this.state;
     const { isDisplayForm } = this.props;
-
-    // if (sort.by === "name") {
-    //   tasks.sort((a, b) => {
-    //     if (a.name > b.name) return sort.value;
-    //     else if (a.name < b.name) return -sort.value;
-    //     else return 0;
-    //   });
-    // } else {
-    //   tasks.sort((a, b) => {
-    //     if (a.status > b.status) return -sort.value;
-    //     else if (a.status < b.status) return sort.value;
-    //     else return 0;
-    //   });
-    // }
 
     return (
       <div className="container">
@@ -86,7 +57,7 @@ class App extends Component {
             >
               <span className="fa fa-plus mr-5" />Thêm Công Việc
             </button>
-            <TaskControl onSort={this.handleSort} sort={sort} />
+            <TaskControl />
             <div className="row mt-15">
               <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <TaskList />

@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import * as actions from "../actions";
 
 class TaskSortControl extends Component {
   render() {
-    let { onSort, sort } = this.props;
+    let { onSortTask, sort } = this.props;
 
     return (
       <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -18,7 +20,7 @@ class TaskSortControl extends Component {
             Sắp Xếp <span className="fa fa-caret-square-o-down ml-5" />
           </button>
           <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li onClick={() => onSort("name", 1)}>
+            <li onClick={() => onSortTask("name", 1)}>
               <a
                 role="button"
                 className={
@@ -28,7 +30,7 @@ class TaskSortControl extends Component {
                 <span className="fa fa-sort-alpha-asc pr-5">Tên A-Z</span>
               </a>
             </li>
-            <li onClick={() => onSort("name", -1)}>
+            <li onClick={() => onSortTask("name", -1)}>
               <a
                 role="button"
                 className={
@@ -39,7 +41,7 @@ class TaskSortControl extends Component {
               </a>
             </li>
             <li role="separator" className="divider" />
-            <li onClick={() => onSort("status", 1)}>
+            <li onClick={() => onSortTask("status", 1)}>
               <a
                 role="button"
                 className={
@@ -51,7 +53,7 @@ class TaskSortControl extends Component {
                 Trạng Thái Kích Hoạt
               </a>
             </li>
-            <li onClick={() => onSort("status", -1)}>
+            <li onClick={() => onSortTask("status", -1)}>
               <a
                 role="button"
                 className={
@@ -70,4 +72,21 @@ class TaskSortControl extends Component {
   }
 }
 
-export default TaskSortControl;
+const mapStateToProps = state => {
+  return {
+    sort: state.sort
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onSortTask: (sortBy, sortVal) => {
+      dispatch(actions.sortTask(sortBy, sortVal));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskSortControl);

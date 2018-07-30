@@ -65,3 +65,11 @@ export const searchTask = keyWord => {
     keyWord
   };
 };
+
+export const sortTask = (sortBy, sortVal) => {
+  return {
+    type: types.SORT_TASK,
+    sortBy,
+    sortVal
+  };
+};
