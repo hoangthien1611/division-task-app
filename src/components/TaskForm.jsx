@@ -65,7 +65,7 @@ class TaskForm extends Component {
   };
 
   render() {
-    const { isDisplayForm, onCloseForm } = this.props;
+    const { isDisplayForm } = this.props;
 
     if (!isDisplayForm) return null;
     return (

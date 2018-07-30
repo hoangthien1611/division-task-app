@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TaskItem from "./TaskItem";
 import { connect } from "react-redux";
+import * as actions from "../actions";
 
 class TaskList extends Component {
   constructor(props) {
@@ -15,19 +16,42 @@ class TaskList extends Component {
     let name = event.target.name;
     let value = event.target.value;
 
-    this.setState(
-      {
-        [name]: value
-      },
-      () => {
-        this.props.onFilter(this.state);
-      }
-    );
+    let filter = {
+      filterName: name === "filterName" ? value : this.state.filterName,
+      filterStatus: name === "filterStatus" ? value : this.state.filterStatus
+    };
+
+    this.setState({
+      [name]: value
+    });
+    this.props.onFilterTable(filter);
   };
 
   render() {
-    const { tasks } = this.props;
+    let { tasks, filter, keyWord } = this.props;
     let { filterName, filterStatus } = this.state;
+
+    if (filter) {
+      if (filter.filterStatus === -1) {
+        tasks = tasks.filter(
+          task => task.name.toLowerCase().indexOf(filter.filterName) !== -1
+        );
+      } else {
+        tasks = tasks.filter(task => {
+          return (
+            task.name.toLowerCase().indexOf(filter.filterName) !== -1 &&
+            task.status === (filter.filterStatus === 1 ? true : false)
+          );
+        });
+      }
+    }
+
+    if (keyWord) {
+      tasks = tasks.filter(
+        task => task.name.toLowerCase().indexOf(keyWord) !== -1
+      );
+    }
+
     const elmTask = tasks.map((task, index) => {
       return <TaskItem key={task.id} index={index} task={task} />;
     });
@@ -85,11 +109,21 @@ class TaskList extends Component {
 
 const mapStateToProps = state => {
   return {
-    tasks: state.tasks
+    tasks: state.tasks,
+    filter: state.filterTable,
+    keyWord: state.keyWord
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onFilterTable: filter => {
+      dispatch(actions.filterTable(filter));
+    }
   };
 };
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(TaskList);

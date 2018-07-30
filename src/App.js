@@ -10,11 +10,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      filter: {
-        name: "",
-        status: -1
-      },
-      keyword: "",
       sort: {
         by: "name",
         value: 1
@@ -36,21 +31,6 @@ class App extends Component {
     });
   };
 
-  handleFilter = filter => {
-    filter.filterStatus = parseInt(filter.filterStatus, 10);
-    filter.filterName = filter.filterName.toLowerCase();
-    this.setState({
-      filter: {
-        name: filter.filterName,
-        status: filter.filterStatus
-      }
-    });
-  };
-
-  handleSearch = key => {
-    this.setState({ keyword: key });
-  };
-
   handleSort = (sortBy, sortVal) => {
     this.setState({
       sort: {
@@ -61,29 +41,8 @@ class App extends Component {
   };
 
   render() {
-    const { filter, keyword, sort } = this.state;
+    const { sort } = this.state;
     const { isDisplayForm } = this.props;
-
-    // if (filter) {
-    //   if (filter.status === -1) {
-    //     tasks = tasks.filter(
-    //       task => task.name.toLowerCase().indexOf(filter.name) !== -1
-    //     );
-    //   } else {
-    //     tasks = tasks.filter(task => {
-    //       return (
-    //         task.name.toLowerCase().indexOf(filter.name) !== -1 &&
-    //         task.status === (filter.status === 1 ? true : false)
-    //       );
-    //     });
-    //   }
-    // }
-
-    // if (keyword) {
-    //   tasks = tasks.filter(
-    //     task => task.name.toLowerCase().indexOf(keyword) !== -1
-    //   );
-    // }
 
     // if (sort.by === "name") {
     //   tasks.sort((a, b) => {
@@ -127,14 +86,10 @@ class App extends Component {
             >
               <span className="fa fa-plus mr-5" />Thêm Công Việc
             </button>
-            <TaskControl
-              onSearch={this.handleSearch}
-              onSort={this.handleSort}
-              sort={sort}
-            />
+            <TaskControl onSort={this.handleSort} sort={sort} />
             <div className="row mt-15">
               <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <TaskList onFilter={this.handleFilter} />
+                <TaskList />
               </div>
             </div>
           </div>
